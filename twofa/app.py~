@@ -1,0 +1,51 @@
+from flask import request, Flask
+import json, socket
+import random
+
+
+import sys
+sys.path.insert(0,"..")
+
+import my_imports.top
+
+app = Flask(__name__)
+
+#
+# curl http://localhost:9003
+#
+@app.route('/')
+def echo():
+    returnDictionary = {}
+    returnDictionary["echo"] = str(socket.gethostname())
+    return json.dumps(returnDictionary)
+
+#
+# curl -d '{ "name": "first_name", "code" : "code_sent_to_phone" }' -X POST http://localhost:9003/authorize -H "Content-type: application/json"
+#
+@app.route("/authorize", methods=["POST"])
+def authorize():
+
+    auth_ = {}
+
+    #possible 2fa authentication codes that could be sent to someone's phone
+    possible_codes = ['3CA6BX', '2FGhiW', 'FhQ2048j']
+    
+    first_name = request.json['name']
+    code_sent_to_phone = request.json['code']
+    correct_code = False
+
+    curr_code = possible_codes[random.randint(0, 2)]
+    
+    if code_sent_to_phone == curr_code: correct_code = True
+
+    auth_['name'] = first_name
+    auth_['code'] = code_sent_to_phone
+    auth_['auth'] = correct_code
+    
+    
+    return json.dumps(auth_)
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=9003)

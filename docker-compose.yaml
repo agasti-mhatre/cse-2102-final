@@ -11,3 +11,13 @@ services:
      build: ./passwordcheck
      ports:
      - "9001:9001"
+
+   role:
+     build: ./role
+     ports:
+     - "9002:9002"
+
+   twofa:
+     build: ./twofa
+     ports:
+     - "9003:9003"
